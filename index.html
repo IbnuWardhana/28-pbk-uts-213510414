@@ -1,161 +1,136 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <meta charset="UTF-8">
-    <title>Part 2</title>
-  </head>
-  <body>
-  <template>
-  <div class="todo-list">
-    <h1>Input and Delete an Item</h1>
-      <form @submit.prevent="addTodo">
-        <input type="text" v-model="newTodo" placeholder="Input Data..."/>
-        <button type="submit" class="tambahkan">Input</button>
-      </form>
-      <h2>List Item</h2>
-      <div class="tengah">
-      <ul>
-        <li v-for="(todo, index) in todos" :key="index">
-          <input type="checkbox" v-model="todo.done"/>
-          <span :class="{ 'done': todo.done }">{{ todo.text }}</span>
-          <button @click="removeTodo(index)">Remove</button>
-        </li>
-      </ul>
-      <button @click="removeTodo">Remove All</button>
+<html>
+<head>
+    <title>DAFTAR BUKU</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #taskInput {
+            width: 200px;
+            margin: 20px;
+        }
+
+        #taskList {
+            list-style-type: none;
+            display: block;
+            width: 60%;
+        }
+
+        .taskItem {
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .taskItem.checked {
+            text-decoration: line-through;
+        }
+
+        .deleteButton {
+            margin-left: 40%;
+            background-color: #2d2d2dbd;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .deleteButton:hover {
+            background-color: #2d2d2dbd;
+        }
+
+        .filterContainer {
+            margin-bottom: 10px;
+        }
+
+        .filterContainer input[type="radio"] {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>DAFTAR BUKU</h1><hr>
+    <input type="text" id="taskInput" placeholder="Tambahkan judul buku">
+    <button onclick="addTask()">Tambah</button>
+    <br><hr>
+    <div class="filterContainer">
+        <input type="radio" name="filter" id="allFilter" checked onclick="filterTasks('all')"> <label for="allFilter">Semua</label>
+        <input type="radio" name="filter" id="checkedFilter" onclick="filterTasks('checked')"> <label for="checkedFilter">Tercentang</label>
+        <input type="radio" name="filter" id="uncheckedFilter" onclick="filterTasks('unchecked')"> <label for="uncheckedFilter">Belum Diceklis</label>
     </div>
-  </div>
-  <footer>
-    <p>Copyright &copy;IbnuWardhana</p>
-  </footer>
-</template>
+    <ul id="taskList"></ul>
 
-<script>
-export default {
-  data() {
-    return {
-      newTodo: '',
-      todos: []
-    }
-  },
-  methods: {
-    addTodo() {
-      if (this.newTodo.trim().length === 0) {
-        return
-      }
-      this.todos.push({
-        text: this.newTodo,
-        done: false
-      })
-      this.newTodo = ''
-    },
-    removeTodo(index) {
-      this.todos.splice(index, 1)
-    },
-    showAll() {
-      this.filter = 'all'
-    },
-    showActive() {
-      this.filter = 'active'
-    },
-    showCompleted() {
-      this.filter = 'completed'
-    }
-  },
-  computed: {
-    filteredTodos() {
-      switch (this.filter) {
-        case 'active':
-          return this.todos.filter(todo => !todo.done)
-        case 'completed':
-          return this.todos.filter(todo => todo.done)
-        default:
-          return this.todos
-      }
-    }
-  }
-}
-</script>
+    <script>
+        // Mendapatkan referensi elemen-elemen HTML
+        var taskInput = document.getElementById("taskInput");
+        var taskList = document.getElementById("taskList");
+        var allFilter = document.getElementById("allFilter");
+        var checkedFilter = document.getElementById("checkedFilter");
+        var uncheckedFilter = document.getElementById("uncheckedFilter");
 
-<style>
+        // Mendefinisikan fungsi untuk menambahkan task
+        function addTask() {
+            var task = taskInput.value;
+            if (task !== "") {
+                var li = document.createElement("li");
+                li.innerText = task;
+                li.className = "taskItem";
+                taskList.appendChild(li);
 
-.todo-list {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 40px;
-  font-size: 1.2rem;
-  background-color: #333;
-}
+                // Membuat checkbox
+                var checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.addEventListener("click", function() {
+                    li.classList.toggle("checked");
+                });
+                li.insertBefore(checkbox, li.firstChild);
 
-.todo-list h1 {
-  text-align: center;
-  color: lightblue;
-}
+                // Membuat tombol hapus
+                var deleteButton = document.createElement("button");
+                deleteButton.innerText = "Hapus";
+                deleteButton.className = "deleteButton";
+                deleteButton.addEventListener("click", function() {
+                    deleteTask(li);
+                });
+                li.appendChild(deleteButton);
 
-.todo-list form {
-    display: flex;
-    margin-bottom: 20px
-}
+                taskInput.value = "";
+            }
+        }
 
-.todo-list input[type=text] {
-    flex: 1;
-    padding: 8px;
-    font-size: 1.2rem;
-    border-radius: 10px;
-}
+        // Mendefinisikan fungsi untuk menghapus task
+        function deleteTask(li) {
+            li.parentNode.removeChild(li);
+        }
 
-.todo-list button[type=submit] {
-    margin-left: 10px;
-    padding: 8px;
-    font-size: 1.2rem;
-    background-color: #111;
-    border-radius: 10px;
-}
-
-.todo-list h2{
-  text-align: center;
-}
-
-.todo-list ul {
-    list-style: none;
-    padding: 0;
-}
-
-.todo-list li {
-    display: flex;
-    align-items:center;
-    margin-bottom: 10px;
-}
-
-.todo-list input[type=checkbox] {
-    margin-right: 10px;
-}
-
-.todo-list .done {
-    text-decoration: line-through;
-    color: red;
-}
-
-.todo-list button {
-    margin-left: 10px;
-    padding: 8px;
-    background-color: #111;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2rem;
-    color: #fff;
-    border-radius: 10px;
-}
-
-.tengah{
-  margin-left: 38%;
-
-}
-
-footer{
-  text-align: center;
-}
-
-</style>
-  </body>
+        // Mendefinisikan fungsi untuk memfilter task
+        function filterTasks(filter) {
+            var tasks = document.getElementsByClassName("taskItem");
+            for (var i = 0; i < tasks.length; i++) {
+                var task = tasks[i];
+                if (filter === "all") {
+                    task.style.display = "flex";
+                } else if (filter === "checked") {
+                    if (task.classList.contains("checked")) {
+                        task.style.display = "flex";
+                    } else {
+                        task.style.display = "none";
+                    }
+                } else if (filter === "unchecked") {
+                    if (!task.classList.contains("checked")) {
+                        task.style.display = "flex";
+                    } else {
+                        task.style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+</body>
 </html>
